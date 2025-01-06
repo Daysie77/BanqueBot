@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Accueil</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background: url('/static/icons/imagefond5.png') no-repeat center center fixed;
+            background-size: cover;
+            position: relative;
+            height: 100vh;
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 1;
+        }
+
+        .content {
+            position: relative;
+            z-index: 2;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+            align-items: center;
+            height: 100%;
+        }
+
+        .container {
+            padding: 20px 40px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            text-align: center;
+            max-width: 800px;
+            width: 100%;
+            height: 60%;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+
+        }
+
+        h1 {
+            color: #fff;
+            font-size: 35px;
+            margin-bottom: 20px;
+        }
+
+        .static-text {
+            display: inline;
+        }
+
+        .animated-text {
+            display: inline;
+            overflow: hidden;
+            white-space: nowrap;
+            border-right: 0.15em solid #4070f4;
+        }
+
+        @keyframes blink-caret {
+
+            from,
+            to {
+                border-color: transparent;
+            }
+
+            50% {
+                border-color: #4070f4;
+            }
+        }
+
+        .animated-text {
+            animation: blink-caret 0.75s step-end infinite;
+            color: lightblue;
+        }
+
+        .para {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 5px;
+            height: 60px;
+            width: 400px;
+            margin: 0 auto;
+            gap: 10px;
+            margin-bottom: 60px;
+        }
+
+        .para .inscrip,
+        .para .conn {
+            color: #ccc;
+            font-size: 18px;
+            height: 100%;
+            width: 49%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: 2px solid #4070f4;
+            border-radius: 5px;
+            padding: 0 10px;
+            box-sizing: border-box;
+            transition: background-color 0.3s, border-color 0.3s, color 0.3s;
+        }
+
+        .para .inscrip a,
+        .para .conn a {
+            color: #e0eaf1;
+            text-decoration: none;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            height: 100%;
+            width: 100%;
+            justify-content: center;
+        }
+
+        .para .inscrip:hover,
+        .para .conn:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+            border-color: #fff;
+            color: #fff;
+        }
+
+        .para .inscrip a:hover,
+        .para .conn a:hover {
+            text-decoration: none;
+        }
+
+        .para p{
+            border: #ccc solid;
+            height: 40px;
+        }
+
+        .cercle_image {
+            border-radius: 50%;
+            width: 400px;
+            height: 400px;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .cercle_image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="content">
+        <div class="container">
+            <h1>
+                <span class="static-text">Bienvenue sur l'application de chatbot </span><br>
+                <span class="animated-text" id="animated-text">Daysie</span>
+            </h1>
+            <div class="para">
+                <p class="inscrip"><a href="/inscription">Inscription</a></p>
+                <p></p>
+                <p class="conn"><a href="/connexion">Connexion</a></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const element = document.getElementById('animated-text');
+            const fullText = "conversationnel simple et intuitive.";
+            let currentIndex = 0;
+
+            function typeWriter() {
+                if (currentIndex < fullText.length) {
+                    element.textContent += fullText.charAt(currentIndex);
+                    currentIndex++;
+                    setTimeout(typeWriter, 100); // Ajustez la vitesse de la saisie ici (100ms)
+                }
+            }
+
+            setTimeout(() => {
+                element.textContent = "";
+                typeWriter();
+            }, 3000); // Délai avant de changer le texte (3 secondes)
+        });
+    </script>
+</body>
+
+</html>

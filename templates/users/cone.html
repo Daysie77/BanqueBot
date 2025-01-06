@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connexion</title>
+
+    <!-- CSS -->
+    <!-- <link rel="stylesheet" href="static/css/style.css"> -->
+
+    <!-- Boxicons CSS -->
+    <link href='https://unpkg.com/boxicons@2.1.2/css/boxicons.min.css' rel='stylesheet'>
+    <style>
+        /* Google Fonts - Poppins */
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .container {
+            height: 100vh;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            column-gap: 30px;
+            background: url('/static/icons/bg_connect_1.jpg') no-repeat center center fixed;
+            background-size: cover;
+        }
+
+        .form {
+            position: relative;
+            max-width: 430px;
+            width: 100%;
+            padding: 30px;
+            border-radius: 6px;
+            background: #FFF;
+        }
+
+        h2 {
+            font-size: 23px;
+            font-weight: 600;
+            color: #232836;
+            
+        }
+
+        form {
+            margin-top: 30px;
+        }
+
+        .field {
+            position: relative;
+            height: 50px;
+            width: 100%;
+            margin-top: 20px;
+            border-radius: 6px;
+        }
+
+        .field input,
+        .field button {
+            height: 100%;
+            width: 100%;
+            border: none;
+            font-size: 16px;
+            font-weight: 400;
+            border-radius: 6px;
+        }
+
+        .field input {
+            outline: none;
+            padding: 0 15px;
+            border: 1px solid #CACACA;
+        }
+
+        .field input:focus {
+            border-bottom-width: 2px;
+        }
+
+        .eye-icon {
+            position: absolute;
+            top: 50%;
+            right: 10px;
+            transform: translateY(-50%);
+            font-size: 18px;
+            color: #8b8b8b;
+            cursor: pointer;
+            padding: 5px;
+        }
+
+        .field button {
+            color: #fff;
+            background-color: #232836;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .field button:hover {
+            background-color: #dc3545;
+        }
+
+        .form-link {
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        .form-link span,
+        .form-link a {
+            font-size: 14px;
+            font-weight: 400;
+            color: #232836;
+        }
+
+        .form a {
+            color: #dc3545;
+            text-decoration: none;
+        }
+
+        .form-content a:hover {
+            text-decoration: underline;
+        }
+
+
+        @media screen and (max-width: 400px) {
+            .form {
+                padding: 20px 10px;
+            }
+        }
+    </style>
+
+</head>
+
+<body>
+
+    <section class="container forms">
+        <div class="form login" 
+        style="width: 800px; height: 450px; background-color: rgba(245, 245, 245, 0.699); border-radius: 20px; ">
+            <div class="form-content">
+                <h2>Bonjour, heureux de vous voir...</h2>
+                <p>Connectez pour continuer</p>
+                <!-- Affichage des messages flash -->
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                {% for category, message in messages %}
+                <div class="flash-message {{ category }}">
+                    {{ message }}
+                </div>
+                {% endfor %}
+                {% endif %}
+                {% endwith %}
+
+                <!-- Formulaire de connexion -->
+                <form action="{{ url_for('connexion') }}" method="POST">
+                    <div class="field input-field">
+                        <input type="email" name="email" placeholder="Email" class="input" required>
+                    </div>
+
+                    <div class="field input-field">
+                        <input type="password" name="password" placeholder="Password" class="password" required>
+                        <i class='bx bx-hide eye-icon'></i>
+                    </div>
+
+                    <div class="form-link">
+                        <a href="#" class="forgot-pass">Mot de passe oublié?</a>
+                    </div>
+
+                    <div class="field button-field">
+                        <button type="submit">Se Connecter</button>
+                    </div>
+                </form>
+
+                <!-- Liens supplémentaires -->
+                <div class="form-link">
+                    <span>Pas de compte? <a href="{{ url_for('inscription') }}"
+                            class="link signup-link">Inscrivez-vous</a></span>
+                </div>
+            </div>
+
+            <!-- <div class="line"></div> -->
+
+            <!-- Options de média -->
+            <!-- <div class="media-options">
+                <a href="#" class="field google">
+                    <img src="#" alt="" class="google-img">
+                    <span>Connectez-vous avec Google</span>
+                </a>
+            </div> -->
+
+        </div>
+    </section>
+
+    <!-- JavaScript -->
+    <!-- <script src="static/js/script.js"></script> -->
+    <script src="{{ url_for('static', filename='js/con_inscrip.js') }}"></script>
+</body>
+
+</html>

@@ -1,0 +1,210 @@
+{% extends "base.html" %}
+
+{% block centre %}
+<div class="container-fluid vh-100 d-flex p-0">
+    {% include 'partial/navbar.html' %}
+
+    <div class="card w-100 h-100 mx-0 my-0" id="chat-card">
+        <div class="card-header d-flex justify-content-between align-items-center" style="height: 60px; background-color: #232836;">
+            <div>
+                <button class="btn btn-danger btn-sm" onclick="showPopup()">Nouvelle Conversation</button>
+            </div>
+            <div class="dropup dropup-center position-relative">
+                <button class="btn btn-secondary d-flex align-items-center dropdown-toggle" type="button"
+                    id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                    <img src="{{ url_for('static', filename=user.profileImage)}}" alt="{{ user.nom }}"
+                        class="rounded-square"
+                        style="width: 100%; height: 50px; object-fit: contain; border-radius: 20px;">
+                    <div class="ml-2">
+                        <h6 class="mb-0" style="font-size: 15px; color: white;">{{ user.nom }}</h6>
+                    </div>
+                </button>
+                <div class="account-dropdown js-dropdown dropdown-menu-end dropdown-menu"
+                    aria-labelledby="userDropdown">
+                    <div class="dropdown-item info clearfix">
+                        <div class="image">
+                            <a href="#">
+                                <img src="{{ url_for('static', filename=user.profileImage)}}"
+                                    alt="{{ user.nom }}" />
+                            </a>
+                        </div>
+                        <div class="content">
+                            <h5 class="name">
+                                <a href="#">{{ user.nom }}</a>
+                            </h5>
+                            <span class="email">{{ user.email }}</span>
+                        </div>
+                    </div>
+                    <div class="account-dropdown__footer" id="text_survol">
+                        <a href="{{ url_for('profil') }}">
+                            <i class="fas fa-user"></i>Profil</a>
+                        <a href="{{ url_for('deco') }}">
+                            <i class="zmdi zmdi-power"></i>Déconnexion</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card-body overflow-auto" id="chatlog">
+            {% for message in messages %}
+            <div class="message {% if message.sender == 'user' %}user{% else %}bot{% endif %}">
+                <!-- Vérification si un fichier est attaché -->
+                {% if message.file_url %}
+                <div class="file-container">
+                    <!-- Vérifier si le fichier est une image -->
+                    {% if message.file_url.endswith('.png') or message.file_url.endswith('.jpg') or message.file_url.endswith('.jpeg') %}
+                    <img src="{{ message.file_url }}" alt="Image envoyée" 
+                        style="max-width: 200px; border-radius: 10px; margin-bottom: 5px;">
+                    {% else %}
+                    <a href="{{ message.file_url }}" target="_blank">Télécharger le fichier</a>
+                    {% endif %}
+                </div>
+                {% endif %}
+                <!-- Affichage du message textuel -->
+                <div class="message-content">{{ message.content }}</div>
+            </div>
+            {% endfor %}
+        </div>
+    
+        <div class="card-footer d-flex flex-column align-items-stretch" style="background-color: #232836;">
+            <!-- Zone d'aperçu et champ de texte -->
+            <div class="d-flex align-items-center">
+                <!-- Bouton pour télécharger un fichier -->
+                <button class="btn btn-light" id="fileUploadButton">
+                    <i class="fas fa-paperclip" style="color: #dc3545;"></i>
+                    <input type="file" id="fileInput" style="display: none;" />
+                </button>
+
+                <!-- Texte et aperçu des fichiers -->
+                <div class="flex-grow-1 mx-2">
+                    <div id="messageContainer" class="d-flex flex-column overflow-auto" style="height: 100px; border: 1px solid #ced4da; border-radius: 5px; padding: 5px; background-color: #f8f9fa;">
+                        <!-- Contenu d'aperçu des fichiers -->
+                        <div id="filePreviewContainer" class="position-relative"></div>
+                        
+                        <!-- Zone de texte -->
+                        <textarea class="form-control border-0" id="userInput" placeholder="Tapez un message..." style="resize: none; height: auto; overflow: hidden;"></textarea>
+                    </div>
+                </div>
+                
+
+
+                <!-- Bouton pour envoyer -->
+                <button class="btn btn-danger" id="sendMessageButton">
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+                <!-- Microphone bouton -->
+                <div class="mt-2">
+                    <button class="btn btn-light" id="microphoneButton" onclick="startRecording()">
+                        <i class="fas fa-microphone" style="color: #dc3545;"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Microphone bouton -->
+            <!-- <div class="mt-2">
+                <button class="btn btn-light" id="microphoneButton" onclick="startRecording()">
+                    <i class="fas fa-microphone" style="color: #dc3545;"></i>
+                </button>
+            </div> -->
+        </div>
+    </div>
+</div>
+
+<div id="titlePopup" class="popup">
+    <div class="popup-content">
+        <span class="close" onclick="hidePopup()">&times;</span>
+        <input type="text" id="conversationTitle" placeholder="Titre de la conversation">
+        <button class="btn btn-danger btn-sm" onclick="startNewConversation()">Démarrer</button>
+    </div>
+</div>
+
+<style>
+    .popup {
+        display: none;
+        position: fixed;
+        z-index: 9;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        background-color: rgba(0, 0, 0, 0.4);
+        padding-top: 60px;
+    }
+
+    .popup-content {
+        background-color: #ffffff;
+        margin: 5% auto;
+        padding: 20px;
+        border: 2px solid #888;
+        width: 90%;
+        max-width: 500px;
+    }
+
+    .close {
+        color: #aaa;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+    }
+
+    .close:hover,
+    .close:focus {
+        color: black;
+        text-decoration: none;
+        cursor: pointer;
+    }
+
+    #filePreviewContainer {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    #filePreviewContainer .preview-item {
+        position: relative;
+        display: inline-block;
+        max-height: 50px;
+        border: 1px solid #ced4da;
+        border-radius: 5px;
+        background-color: #f8f9fa;
+    }
+
+    #filePreviewContainer .preview-item img {
+        max-width: 50px;
+        max-height: 50px;
+        border-radius: 5px;
+    }
+
+    #filePreviewContainer .preview-item div {
+        display: inline-block;
+        padding: 5px 10px;
+        font-size: 14px;
+        background-color: #f8d7da;
+        color: #721c24;
+        border: 1px solid #f5c6cb;
+        border-radius: 5px;
+    }
+
+    #filePreviewContainer .remove-preview {
+        position: absolute;
+        top: -5px;
+        right: -5px;
+        background-color: #dc3545;
+        color: white;
+        border: none;
+        border-radius: 50%;
+        width: 20px;
+        height: 20px;
+        font-size: 14px;
+        text-align: center;
+        line-height: 18px;
+        cursor: pointer;
+    }
+    
+    /*#text_survol a:hover {
+        color: #dc3545;
+    }*/
+</style>
+
+
+{% endblock %}

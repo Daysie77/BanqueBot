@@ -1,0 +1,27 @@
+<!-- partial/navbar.html -->
+<div style="width: 18%; height: 100vh;" id="sidebar-wrapper">
+    <!-- <div style="border: 2px solid red;"> -->
+        <div style="display: flex; flex-direction: column; justify-content: space-around; align-items: center;">
+            <div style="margin: 20px 0 30px 0">
+                <a href="{{ url_for('interface') }}"><img src="{{url_for('static', filename='/icons/logo_SGCI_1.png')}}" alt="" style="width: 60px; height: 60px;"></a>
+            </div>
+            <div class="sidebar-heading d-flex justify-content-between align-items-center">
+                <span style="font-size: 18px; color: black">Historique des Conversations</span>
+            </div>
+            
+        </div>
+        <div style="height: 100%;">
+            <div class="list-group list-group-flush" id="conversation-list" style="height: 100%">
+                <!-- Liste des conversations -->
+            </div>
+            
+        </div>
+        
+        
+    <!-- </div> -->
+     <div class="footer" style="display: flex; flex-direction: column; justify-content: space-around; align-items: center; margin-bottom: 25px;">
+        <p>@Copywrite SG Côte d'Ivoire - 2024</p>
+     </div>
+
+</div>
+

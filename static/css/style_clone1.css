@@ -1,0 +1,380 @@
+body {
+    background-color: #f8f9fa;
+}
+#chatlog {
+    display: flex;
+    flex-direction: column;
+    height: calc(100% - 56px - 56px);
+    /* Adjust for header and footer */
+}
+
+.message {
+    display: flex;
+    align-items: center;
+    margin: 10px 0;
+}
+
+.message.user .avatar,
+.message.bot .avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    margin-right: 10px;
+}
+
+
+.message.user {
+    justify-content: flex-end;
+}
+
+.message.user .message-content {
+    background-color: #007bff;
+    color: white;
+    border-radius: 10px;
+    padding: 10px;
+    max-width: 70%;
+}
+
+.message.bot .message-content {
+    background-color: #f1f0f0;
+    border-radius: 10px;
+    padding: 10px;
+    max-width: 70%;
+}
+
+
+#sidebar-wrapper {
+    width: 250px;
+    display: flex;
+    flex-direction: column;
+}
+
+#discussion-list {
+    overflow-y: auto;
+    /* Activation du défilement vertical automatique lorsque nécessaire */
+    max-height: calc(100vh - 112px);
+    /* Hauteur maximale de la fenêtre visible moins la hauteur des éléments fixes */
+}
+
+.list-group-item {
+    cursor: pointer;
+}
+
+.list-group-item:hover {
+    background-color: #f1f1f1;
+}
+
+#sidebar-wrapper .user-section {
+    border-top: 1px solid #ddd;
+    padding: 15px;
+}
+
+#sidebar-wrapper .user-section img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+}
+
+#sidebar-wrapper .user-section .user-info {
+    margin-left: 10px;
+}
+
+#chat-card {
+    height: 100vh;
+    /* Full height */
+}
+
+.card-footer .btn-light {
+    border: none;
+    background-color: transparent;
+    font-size: 1.5rem;
+}
+
+.input-group textarea {
+    resize: none;
+    overflow-y: auto;
+    max-height: 150px;
+    /* Adjust as needed */
+}
+
+.dropdown-toggle::after {
+    display: none;
+}
+
+.dropdown-menu {
+    position: absolute;
+    top: auto;
+    bottom: 100%;
+    /* Position the dropdown above */
+    left: 0;
+    will-change: transform;
+    transform: translate3d(0px, -100%, 0px);
+    /* Adjust to make sure it appears above */
+}
+
+#conversation-list {
+    max-height: 425px;
+    /* Ajustez selon votre mise en page et besoin */
+    overflow-y: auto;
+    margin-top: 20px;
+}
+
+span{
+    font-size: 25px;
+    font-weight: bold;
+    color: #007bff;
+    text-align: center;
+}
+
+/* style_clone.css */
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+        opacity: 1;
+    }
+
+    100% {
+        transform: scale(1.2);
+        opacity: 0.5;
+    }
+}
+
+.recording {
+    animation: pulse 1s infinite;
+}
+
+
+#progress-bar {
+    width: 100%;
+    background-color: #f3f3f3;
+}
+
+#progress-bar div {
+    width: 0;
+    height: 20px;
+    background-color: #4caf50;
+    text-align: center;
+    line-height: 20px;
+    color: white;
+}
+
+
+
+/* CSS personnalisé pour le bouton et le dropdown */
+.btn-secondary {
+    background-color: transparent;
+    border: none;
+    color: black;
+    font-weight: bold;
+    width: 100%;
+    /* Prendre la largeur du parent */
+    padding: 0;
+    /* Enlever le padding par défaut */
+    outline: none;
+    /* Supprimer l'outline par défaut */
+}
+
+
+.btn-secondary:focus,
+.btn-secondary.focus {
+    box-shadow: none;
+    /* Supprimer la bordure au focus */
+    background-color: transparent !important;
+    /* Empêcher la couleur de fond au clic */
+}
+
+.btn-secondary:hover {
+    background-color: #f7f7f7;
+    /* Couleur au survol */
+}
+
+.btn-secondary:active,
+.btn-secondary.active {
+    background-color: transparent !important;
+    /* Empêcher la couleur de fond lorsqu'activé */
+    box-shadow: none !important;
+    /* Supprimer la box-shadow lorsqu'activé */
+}
+
+.dropdown-toggle::after {
+    display: inline-block;
+    margin-left: 0.255em;
+    vertical-align: 0.255em;
+    content: "";
+    border-top: 0.3em solid;
+    border-right: 0.3em solid transparent;
+    border-bottom: 0;
+    border-left: 0.3em solid transparent;
+    transform: rotate(180deg);
+    /* Tourner la flèche vers le haut */
+    color: black;
+    /* Couleur de la flèche */
+}
+
+.dropdown-toggle:hover::after {
+    color: black;
+    /* Couleur de la flèche au survol */
+}
+
+.dropdown-menu-end {
+    top: auto;
+    /* Réinitialiser la position top */
+    bottom: 100%;
+    /* Positionner le menu au-dessus */
+}
+
+.dropdown-item .info {
+    display: flex;
+    align-items: center;
+}
+
+.dropdown-item .info .image {
+    margin-right: 10px;
+}
+
+.dropdown-item .info .content .name {
+    margin-bottom: 0;
+}
+
+.account-dropdown__footer a {
+    color: black;
+    /* Couleur du texte pour les liens */
+}
+
+.account-dropdown__footer a:hover {
+    background-color: #f7f7f7;
+    /* Couleur au survol */
+}
+
+
+/* decoonexionnnnnnn */
+.section_connexion_page_container {
+    width: 100%;
+    height: 530px;
+    /* border: 2px solid red; */
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+
+.section_connexion_page_container1 {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    width: 80%;
+    height: 80%;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    /* border: 2px solid yellow; */
+}
+
+.section_connexion_page_container1 .tableau {
+    /* border: 2px solid pink; */
+    height: 100%;
+    width: 80%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: center;
+}
+
+.section_connexion_page_container1 .tableau .formu1 {
+    width: 100%;
+    height: 50%;
+    border-radius: 20px;
+    border: 2px solid #20A1BE;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: whitesmoke;
+    text-align: center;
+}
+
+.boutton {
+    width: 80%;
+    height: 12%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 20px;
+
+}
+
+.boutton .btn1 {
+    width: 25%;
+    height: 100%;
+    background-color: #20A1BE;
+    border-radius: 5px;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+
+.boutton .btn1:hover {
+    background-color: #13c9ed;
+}
+
+.boutton .btn1 a {
+    text-decoration: none;
+    border-radius: 5px;
+    color: white;
+    font-weight: bold;
+}
+
+.boutton .btn2 {
+    width: 25%;
+    height: 100%;
+    border: 2px #20A1BE solid;
+    background-color: #20A1BE;
+    border-radius: 5px;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    font-weight: bold;
+}
+
+.boutton .btn2:hover {
+    background-color: rgb(18, 236, 145);
+}
+
+.boutton .btn2 a {
+    text-decoration: none;
+    border-radius: 5px;
+    font-weight: bold;
+}
+
+
+
+/* Profilllllllll */
+
+.profile-picture-container {
+    position: relative;
+    width: 250px;
+    /* Largeur du conteneur */
+    height: 250px;
+    /* Hauteur du conteneur */
+    overflow: hidden;
+    /* Empêche le débordement de l'image */
+    border-radius: 10px;
+    /* Bord arrondi de 10px */
+}
+
+.profile-picture {
+    width: 100%;
+    /* 100% de la largeur du conteneur */
+    height: auto;
+    /* Ajuste automatiquement la hauteur en fonction de la largeur */
+    border-radius: 10px;
+    /* Bord arrondi de 10px */
+    object-fit: cover;
+    /* Ajuste l'image pour couvrir toute la zone de l'élément */
+}
+
+

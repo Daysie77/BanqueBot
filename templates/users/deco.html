@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+
+{% block centre %}
+<div class="container-fluid vh-100 d-flex p-0">
+    {% include 'partial/navbar.html' %}
+
+    <div class="card w-100 h-100 mx-0 my-0" id="chat-card">
+        <div class="card-header d-flex justify-content-between align-items-center" style="height: 60px; background-color: #232836;">
+            <div>
+                <button class="btn btn-danger btn-sm" onclick="showPopup()">Nouvelle Conversation</button>
+            </div>
+            <!-- <div class="mt-auto p-3 border-top"> -->
+                <div class="dropup dropup-center position-relative">
+                    <button class="btn btn-secondary d-flex align-items-center dropdown-toggle" type="button"
+                        id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                        <img src="{{ url_for('static', filename=user.profileImage)}}" alt="{{ user.nom }}"
+                            class="rounded-square"
+                            style="width: 100%; height: 50px; object-fit: contain; border-radius: 20px;">
+                        <div class="ml-2">
+                            <h6 class="mb-0" style="font-size: 15px; color: white;">{{ user.nom }}</h6>
+                        </div>
+                    </button>
+                    <div class="account-dropdown js-dropdown dropdown-menu-end dropdown-menu"
+                        aria-labelledby="userDropdown">
+                        <div class="dropdown-item info clearfix">
+                            <div class="image">
+                                <a href="#">
+                                    <img src="{{ url_for('static', filename=user.profileImage)}}"
+                                        alt="{{ user.nom }}" />
+                                </a>
+                            </div>
+                            <div class="content">
+                                <h5 class="name">
+                                    <a href="#">{{ user.nom }}</a>
+                                </h5>
+                                <span class="email">{{ user.email }}</span>
+                            </div>
+                        </div>
+                        <div class="account-dropdown__footer">
+                            <a href="{{ url_for('profil') }}">
+                                <i class="fas fa-user"></i>Profil</a>
+                            <a href="{{ url_for('deco') }}">
+                                <i class="zmdi zmdi-power"></i>Déconnexion</a>
+                        </div>
+                    </div>
+                </div>
+            <!-- </div> -->
+            <!-- <h4>Daysie Bot</h4> -->
+
+        </div>
+        <div class="section_connexion_page_container">
+            <div class="section_connexion_page_container1">
+                <form method="post" action="{{ url_for('deconnexion') }}" class="tableau">
+                    <div>
+                        <h2>Se déconnecter</h2>
+                    </div>
+                    <div class="formu1">
+                        <p>Voulez-vous vous déconnecter, {{ user.nom }} ?</p>
+                        <img src="{{ url_for('static', filename=user.profileImage) }}" class="avatar"
+                            alt="Profil Image">
+                    </div>
+                    <div class="boutton">
+                        <div class="btn1">
+                            <a href="{{ url_for('interface') }}">Retour</a>
+                        </div>
+                        <div class="btn2">
+                            <button type="submit" name="confirm" value="yes"><p style="color: white;">Déconnecter</p></button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock centre %}
