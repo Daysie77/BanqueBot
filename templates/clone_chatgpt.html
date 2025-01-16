@@ -51,16 +51,25 @@
                 {% if message.file_url %}
                 <div class="file-container">
                     <!-- Vérifier si le fichier est une image -->
-                    {% if message.file_url.endswith('.png') or message.file_url.endswith('.jpg') or message.file_url.endswith('.jpeg') %}
-                    <img src="{{ message.file_url }}" alt="Image envoyée" 
-                        style="max-width: 200px; border-radius: 10px; margin-bottom: 5px;">
+                    {% if message.file_url.endswith('.png') or message.file_url.endswith('.jpg') or message.file_url.endswith('.jpeg') or message.file_url.endswith('.gif') %}
+                    <img src="{{ message.file_url }}" alt="Image envoyée" class="file-image">
                     {% else %}
-                    <a href="{{ message.file_url }}" target="_blank">Télécharger le fichier</a>
+                    <div class="file-preview">
+                        <i class="fas fa-file-alt file-icon"></i>
+                        <div class="file-details">
+                            <a href="{{ message.file_url }}" target="_blank" class="file-name">
+                                {{ message.file_url.split('/')[-1] }}
+                            </a>
+                            <span class="file-type">Autre fichier</span>
+                        </div>
+                    </div>
                     {% endif %}
                 </div>
                 {% endif %}
                 <!-- Affichage du message textuel -->
+                {% if message.content %}
                 <div class="message-content">{{ message.content }}</div>
+                {% endif %}
             </div>
             {% endfor %}
         </div>
@@ -81,7 +90,9 @@
                         <div id="filePreviewContainer" class="position-relative"></div>
                         
                         <!-- Zone de texte -->
-                        <textarea class="form-control border-0" id="userInput" placeholder="Tapez un message..." style="resize: none; height: auto; overflow: hidden;"></textarea>
+                        <textarea class="form-control border-0" id="userInput" placeholder="Tapez un message..." style="resize: none; height: auto; overflow: auto;"></textarea>
+                        <!-- <textarea class="form-control border-0" id="userInput" placeholder="Tapez un message..." style="resize: none; height: 100%; overflow-y: auto; max-height: 150px;"> -->
+
                     </div>
                 </div>
                 
@@ -200,11 +211,64 @@
         line-height: 18px;
         cursor: pointer;
     }
-    
-    /*#text_survol a:hover {
-        color: #dc3545;
-    }*/
-</style>
 
+    /* Conteneur pour les fichiers */
+    .file-container {
+        display: flex;
+        align-items: center;
+        margin-bottom: 10px;
+        padding: 10px;
+        background-color: #f8f9fa;
+        border: 1px solid #ddd;
+        border-radius: 10px;
+        max-width: 300px;
+    }
+
+    /* Miniatures pour les images */
+    .file-image {
+        max-width: 100%;
+        max-height: 200px;
+        border-radius: 10px;
+        border: 1px solid #ddd;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Icône et détails pour les fichiers non-images */
+    .file-preview {
+        display: flex;
+        align-items: center;
+    }
+
+    .file-icon {
+        font-size: 24px;
+        margin-right: 10px;
+        color: #dc3545;
+    }
+
+    .file-details {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .file-name {
+        font-size: 14px;
+        font-weight: bold;
+        color: #0056b3;
+        text-decoration: none;
+        margin-bottom: 5px;
+    }
+
+    .file-name:hover {
+        text-decoration: underline;
+    }
+
+    .file-type {
+        font-size: 12px;
+        color: #888;
+    }
+
+
+    
+</style>
 
 {% endblock %}

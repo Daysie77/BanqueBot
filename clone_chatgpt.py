@@ -257,7 +257,6 @@ def deco():
         return redirect(url_for('connexion'))
 
 
-
 # Route pour le chat, prend en charge à la fois l'entrée vocale et textuelle
 @app.route('/chat', methods=['POST'])
 def chat():
@@ -277,17 +276,16 @@ def chat():
             file_path = os.path.join(app.config['UPLOAD_FOLDER_PARENT'], filename)
             file.save(file_path)
             # Générer l'URL publique du fichier
-            file_url = url_for('static', filename=f'uploads/images_profil_parent/{filename}')
+            file_url = url_for('static', filename=f'uploads/images_profil_parent/{filename}', _external=True)
 
     # Enregistrement dans la base de données
     with get_db_connection() as conn:
         with conn.cursor() as cursor:
             # Sauvegarder le message de l'utilisateur
-            save_conversation_to_database(user_input, 'user', conversation_id, cursor, conn, file_url)
+            # save_conversation_to_database(user_input, 'user', conversation_id, cursor, conn, file_url)
 
             # Traitement de la réponse du bot
-            bot_response = process_user_input(user_input, user_id)
-            save_conversation_to_database(bot_response, 'bot', conversation_id, cursor, conn)
+            bot_response = process_user_input(user_input, user_id, file_url)
 
     return jsonify({
         'response': bot_response,
@@ -296,427 +294,22 @@ def chat():
 
 
 # Fonction pour traiter l'entrée utilisateur (textuelle ou vocale) avec le chatbot
-def process_user_input(user_input, user_id):
+def process_user_input(user_input, user_id, file_url=None):
     # Traiter avec le chatbot et synthèse vocale
-    bot_response = talk_to_daysie(user_input, user_id)
+    bot_response = talk_to_daysie(user_input, user_id, file_url)
     return bot_response
 
 
-
-## Initialisation du client OpenAI avec les paramètres pour Hugging Face ####################
-
-# client = OpenAI(
-#     base_url="https://api-inference.huggingface.co/v1/",
-#     api_key="hf_YfGAQGotEqZEKGuLllSBBqXXXXXXXXXXXX"  # Remplacez par votre clé d'API Hugging Face
-# )
-
-# def talk_to_daysie(user_input, user_id):
-#     with get_db_connection() as conn:
-#         with conn.cursor() as cursor:
-#             # Récupérer ou créer une conversation
-#             cursor.execute("SELECT id FROM conversations WHERE user_id = %s ORDER BY created_at DESC LIMIT 1", (user_id,))
-#             conversation = cursor.fetchone()
-
-#             if not conversation:
-#                 sql_insert_conversation = "INSERT INTO conversations (user_id, title) VALUES (%s, %s)"
-#                 conversation_data = (user_id, generate_conversation_title(user_input))
-#                 cursor.execute(sql_insert_conversation, conversation_data)
-#                 conn.commit()
-#                 conversation_id = cursor.lastrowid
-#             else:
-#                 conversation_id = conversation['id']
-
-#             save_conversation_to_database(user_input, 'user', conversation_id, cursor, conn)
-
-#             # Préparation des messages pour l'API de Hugging Face
-#             messages = [
-#                 {"role": "user", "content": user_input}
-#             ]
-
-#             # Envoi de la requête au modèle Llama-2-7b-chat-hf
-#             try:
-#                 stream = client.chat.completions.create(
-#                     model="meta-llama/Llama-2-7b-chat-hf",
-#                     messages=messages,
-#                     max_tokens=500,
-#                     stream=True
-#                 )
-
-#                 bot_response = ""
-#                 for chunk in stream:
-#                     bot_response += chunk.choices[0].delta.content
-
-#                 # Sauvegarde de la réponse du bot dans la base de données
-#                 save_conversation_to_database(bot_response, 'bot', conversation_id, cursor, conn)
-
-#                 # Synthèse vocale avec pyttsx3
-#                 engine = pyttsx3.init()
-#                 voices = engine.getProperty('voices')
-#                 for voice in voices:
-#                     if "female" in voice.name.lower():
-#                         engine.setProperty('voice', voice.id)
-#                         break
-#                 engine.say(bot_response)
-#                 engine.runAndWait()
-
-#                 return bot_response
-
-#             except Exception as e:
-#                 error_message = f"Erreur de communication avec le modèle Llama-2: {str(e)}"
-#                 save_conversation_to_database(error_message, 'bot', conversation_id, cursor, conn)
-#                 return error_message
-            
-            
-            
-# #############################################################            
-# from huggingface_hub import login
-
-# # # Modèle et jeton
-# MODEL_ID = "meta-llama/Llama-3.2-90B-Vision-Instruct"
-# TOKEN = "hf_mbkgFkvhRPvGjLVhZiFvClXXXXXXXXXXX"  # Remplacez par votre jeton personnel
-# login(token="hf_sSxUFSWBlSTivmtbJHXXXXXXXXXXX")
-
-# # Charger le modèle et le processeur au début pour éviter des rechargements multiples
-# model = MllamaForConditionalGeneration.from_pretrained(
-#     MODEL_ID,
-#     torch_dtype=torch.bfloat16,
-#     device_map="auto",
-#     token=TOKEN
-# )
-# processor = AutoProcessor.from_pretrained(MODEL_ID, token=TOKEN)
-
-
-
-# def talk_to_daysie(user_input, user_id, image_url=None):
-#     # Connexion à la base de données
-#     with get_db_connection() as conn:
-#         with conn.cursor() as cursor:
-#             # Récupérer ou créer une conversation
-#             cursor.execute("SELECT id FROM conversations WHERE user_id = %s ORDER BY created_at DESC LIMIT 1", (user_id,))
-#             conversation = cursor.fetchone()
-
-#             if not conversation:
-#                 sql_insert_conversation = "INSERT INTO conversations (user_id, title) VALUES (%s, %s)"
-#                 conversation_data = (user_id, generate_conversation_title(user_input))
-#                 cursor.execute(sql_insert_conversation, conversation_data)
-#                 conn.commit()
-#                 conversation_id = cursor.lastrowid
-#             else:
-#                 conversation_id = conversation['id']
-
-#             save_conversation_to_database(user_input, 'user', conversation_id, cursor, conn)
-
-#             # Préparer les entrées pour le modèle
-#             try:
-#                 if image_url:
-#                     # Si une image est fournie, la télécharger
-#                     image = Image.open(requests.get(image_url, stream=True).raw)
-#                 else:
-#                     image = None
-
-#                 # Construire les messages utilisateur
-#                 messages = [
-#                     {"role": "system", 
-#                      "content": "Tu es un assistant virtuel spécialisé dans le domaine bancaire, travaillant pour la Société Générale Côte d'Ivoire.\
-#                             Tu es capable de répondre à toutes les questions concernant les services financiers, les produits bancaires, les crédits,\
-#                             les investissements et la gestion de compte. Tu excelles à offrir des conseils personnalisés et des informations précises, \
-#                             en mettant en avant les offres et services spécifiques de la Société Générale Côte d'Ivoire."
-#                     },
-#                     {"role": "user", "content": user_input}
-#                 ]
-
-#                 input_text = processor.apply_chat_template(messages, add_generation_prompt=True)
-#                 inputs = processor(
-#                     image,
-#                     input_text,
-#                     add_special_tokens=False,
-#                     return_tensors="pt",
-#                 ).to(model.device)
-
-#                 # Générer la réponse
-#                 output = model.generate(**inputs, max_new_tokens=500)
-#                 bot_response = processor.decode(output[0])
-
-#             except Exception as e:
-#                 # En cas d'erreur, enregistrer l'erreur dans la base de données et renvoyer un message d'erreur
-#                 error_message = f"Erreur de communication avec le modèle Hugging Face : {str(e)}"
-#                 save_conversation_to_database(error_message, 'bot', conversation_id, cursor, conn)
-#                 return error_message
-
-#             # Sauvegarder la réponse du bot dans la base de données
-#             save_conversation_to_database(bot_response, 'bot', conversation_id, cursor, conn)
-
-#             # Synthèse vocale avec pyttsx3 (si nécessaire)
-#             engine = pyttsx3.init()
-#             voices = engine.getProperty('voices')
-#             for voice in voices:
-#                 if "female" in voice.name.lower():
-#                     engine.setProperty('voice', voice.id)
-#                     break
-#             engine.say(bot_response)
-#             engine.runAndWait()
-
-#            return bot_response
-
-## Initialisation du client OpenAI avec les paramètres pour Hugging Face ####################
-
-# ############# Fonction avec API de openai #############################
-# Initialisation du client OpenAI avec l'ID de votre organisation et de votre projet
-# client = OpenAI(
-#   organization='org-xz6mbRZjn0nOElF26XXXXXXXXXX',
-#   api_key="sk-proj-_4zPzHR7GRvyouYExdWWhUZmbFf85KDqJTNEYO9xxxxxxxxxxxxx",
-
-# )
-
-# def talk_to_daysie(user_input, user_id):
-#     # Connexion à la base de données
-#     with get_db_connection() as conn:
-#         with conn.cursor() as cursor:
-#             # Récupérer ou créer une conversation
-#             cursor.execute("SELECT id FROM conversations WHERE user_id = %s ORDER BY created_at DESC LIMIT 1", (user_id,))
-#             conversation = cursor.fetchone()
-
-#             if not conversation:
-#                 sql_insert_conversation = "INSERT INTO conversations (user_id, title) VALUES (%s, %s)"
-#                 conversation_data = (user_id, generate_conversation_title(user_input))
-#                 cursor.execute(sql_insert_conversation, conversation_data)
-#                 conn.commit()
-#                 conversation_id = cursor.lastrowid
-#             else:
-#                 conversation_id = conversation['id']
-
-#             save_conversation_to_database(user_input, 'user', conversation_id, cursor, conn)
-
-#             # Définir les messages pour OpenAI, y compris le rôle de l'assistant bancaire
-#             messages = [
-#                 {
-#                     "role": "system",
-#                     "content": "Tu es un assistant virtuel spécialisé dans le domaine bancaire, travaillant pour la Société Générale Côte d'Ivoire.\
-#                         Tu es capable de répondre à toutes les questions concernant les services financiers, les produits bancaires, les crédits,\
-#                         les investissements et la gestion de compte. Tu excelles à offrir des conseils personnalisés et des informations précises, \
-#                         en mettant en avant les offres et services spécifiques de la Société Générale Côte d'Ivoire."
-#                 },
-#                 {
-#                     "role": "user",
-#                     "content": user_input
-#                 }
-#             ]
-
-#             try:
-#                 # Envoi de la requête à l'API OpenAI
-#                 response = client.chat.completions.create(
-#                     model="gpt-4o-mini",  # Remplacez par le modèle approprié si nécessaire
-#                     messages=messages,
-#                     temperature=0.7
-#                 )
-
-#                 # Récupération de la réponse de l'assistant
-#                 bot_response = response.choices[0].message.content
-
-#             except Exception as e:
-#                 # En cas d'erreur, enregistrer l'erreur dans la base de données et renvoyer un message d'erreur
-#                 error_message = f"Erreur de communication avec l'API OpenAI: {str(e)}"
-#                 save_conversation_to_database(error_message, 'bot', conversation_id, cursor, conn)
-#                 return error_message
-
-#             # Sauvegarder la réponse du bot dans la base de données
-#             save_conversation_to_database(bot_response, 'bot', conversation_id, cursor, conn)
-
-#             # Synthèse vocale avec pyttsx3 (si nécessaire)
-#             engine = pyttsx3.init()
-#             voices = engine.getProperty('voices')
-#             for voice in voices:
-#                 if "female" in voice.name.lower():
-#                     engine.setProperty('voice', voice.id)
-#                     break
-#             engine.say(bot_response)
-#             engine.runAndWait()
-
-#             return bot_response
-
-############# Fonction avec API de openai #############################
-
-############# Fonction avec API de together #############################
-
-# from together import Together
-
-# def talk_to_daysie(user_input, user_id):
-#     # Connexion à la base de données
-#     with get_db_connection() as conn:
-#         with conn.cursor() as cursor:
-#             # Récupérer ou créer une conversation
-#             cursor.execute("SELECT id FROM conversations WHERE user_id = %s ORDER BY created_at DESC LIMIT 1", (user_id,))
-#             conversation = cursor.fetchone()
-
-#             if not conversation:
-#                 sql_insert_conversation = "INSERT INTO conversations (user_id, title) VALUES (%s, %s)"
-#                 conversation_data = (user_id, generate_conversation_title(user_input))
-#                 cursor.execute(sql_insert_conversation, conversation_data)
-#                 conn.commit()
-#                 conversation_id = cursor.lastrowid
-#             else:
-#                 conversation_id = conversation['id']
-
-#             save_conversation_to_database(user_input, 'user', conversation_id, cursor, conn)
-            
-#             # Set the API key as an environment variable
-#             os.environ["TOGETHER_API_KEY"] = "1ab9e53eb3620d0eb9fff72b29a9385ac3c43064fa3e1XXXXXXXXXXXXXXX"
-
-#             # Initialize the Together client without API_KEY argument
-#             client = Together()
-            
-#             try:
-#                 response = client.chat.completions.create(
-#                     model="meta-llama/Llama-Vision-Free",
-#                     messages=[
-#                         {
-#                             "role": "system",
-#                             "content": "Tu es un assistant virtuel spécialisé dans le domaine bancaire, travaillant pour la Société Générale.\
-#                                 Tu es capable de répondre à toutes les questions concernant les services financiers, les produits bancaires, \
-#                                 les crédits, les investissements et la gestion de compte. Tu excelles à offrir des conseils personnalisés et \
-#                                 des informations précises, en mettant en avant les offres et services spécifiques de la Société Générale. \
-#                                 Tu vas sur le site google << https://wwww.google.com >> pour prendre des informations plus précises.\
-#                                 Tu dois limiter tes réponses en donnant seulement les informations essentielles à moins que l'utilisateur te demande plus de précision."
-#                         },
-#                         {
-#                             "role": "user",
-#                             "content": user_input
-#                         }
-#                     ],
-#                     max_tokens=500,
-#                     temperature=0.7,
-#                     top_p=0.7,
-#                     top_k=50,
-#                     repetition_penalty=1,
-#                     stop=["<|eot_id|>", "<|eom_id|>"],
-#                     stream=True
-#                 )
-
-#                 # Accumuler la réponse dans une variable
-#                 bot_response = ""
-#                 for token in response:
-#                     if (
-#                         hasattr(token, 'choices') and token.choices and 
-#                         hasattr(token.choices[0], 'delta') and hasattr(token.choices[0].delta, 'content')
-#                     ): 
-#                         bot_response += token.choices[0].delta.content
-
-#                 print(f"Réponse API : {bot_response}")  # Debug uniquement, à supprimer si non nécessaire
-
-#             except Exception as e:
-#                 # En cas d'erreur, enregistrer l'erreur dans la base de données et renvoyer un message d'erreur
-#                 error_message = f"Erreur de communication avec l'API Together.AI : {str(e)}"
-#                 save_conversation_to_database(error_message, 'bot', conversation_id, cursor, conn)
-#                 return error_message
-
-#             # Sauvegarder la réponse du bot dans la base de données
-#             save_conversation_to_database(bot_response, 'bot', conversation_id, cursor, conn)
-
-#             # Synthèse vocale avec pyttsx3
-#             engine = pyttsx3.init()
-#             voices = engine.getProperty('voices')
-#             for voice in voices:
-#                 if "female" in voice.name.lower():
-#                     engine.setProperty('voice', voice.id)
-#                     break
-#             engine.say(bot_response)
-#             engine.runAndWait()
-
-#             # Retourner la réponse
-#             return bot_response
-
-############# Fonction avec API de together #############################
-
-############# Fonction avec API de Ollama #############################
 coze_url = 'https://api.coze.com/open_api/v2/chat'
 coze_headers = {
     # Remplacez par votre jeton d'accès personnel
-    'Authorization': 'Bearer pat_uDtKUUgE40OhQJza8mItCOezv5vkRbxxxxxxxxxxxxx',
+    'Authorization': 'Bearer pat_rqXTegZKq9iN35WPhDFSlyFr1yfSR66IQe2inmeuytTUM7y0FRRPwTF9BCoC20NM',
     'Content-Type': 'application/json',
     'Accept': '*/*',
     'Host': 'api.coze.com',
     'Connection': 'keep-alive'
 }
 
-# Fonction pour parler avec le chatbot et utiliser pyttsx3 pour la synthèse vocale
-
-
-# def talk_to_daysie(user_input, user_id):
-#     # Connection à la base de données
-#     with get_db_connection() as conn:
-#         with conn.cursor() as cursor:
-#             # Récupérer ou créer une conversation
-#             cursor.execute("SELECT id FROM conversations WHERE user_id = %s ORDER BY created_at DESC LIMIT 1", (user_id,))
-#             conversation = cursor.fetchone()
-
-#             if not conversation:
-#                 # Insérer une nouvelle conversation
-#                 sql_insert_conversation = "INSERT INTO conversations (user_id, title) VALUES (%s, %s)"
-#                 conversation_data = (user_id, generate_conversation_title(user_input))
-#                 cursor.execute(sql_insert_conversation, conversation_data)
-#                 conn.commit()
-#                 conversation_id = cursor.lastrowid
-#             else:
-#                 conversation_id = conversation['id']
-
-#             # Insérer le message de l'utilisateur
-#             save_conversation_to_database(user_input, 'user', conversation_id, cursor, conn)
-
-#             # Appel à l'API Coze
-#             data = {
-#                 # Assurez-vous que ce soit une chaîne ou un nombre selon les spécifications
-#                 "conversation_id": str(conversation_id),
-#                 "bot_id": "743598207*****",  # Remplacez par l'ID de votre bot
-#                 "user": "290322018****",  # Assurez-vous que l'ID utilisateur est correct
-#                 "query": user_input,
-#                 "stream": False
-#             }
-
-#             # Affichage des données envoyées pour debug
-#             print(f"Sending request to Coze API: {data}")
-#             response = requests.post(coze_url, headers=coze_headers, json=data)
-
-#             # Affichage de la réponse pour debug
-#             print(f"Response status code: {response.status_code}")
-#             if response.status_code == 200:
-#                 response_json = response.json()
-#                 print(f"Response JSON: {response_json}")
-
-#                 if response_json.get('code') == 0:
-#                     messages = response_json.get('messages', [])
-#                     for message in messages:
-#                         if message['type'] == 'answer':
-#                             bot_response = message['content']
-#                             save_conversation_to_database(
-#                                 bot_response, 'bot', conversation_id, cursor, conn)
-
-#                             # Synthèse vocale avec pyttsx3
-#                             engine = pyttsx3.init()
-#                             voices = engine.getProperty('voices')
-#                             for voice in voices:
-#                                 if "female" in voice.name.lower():
-#                                     engine.setProperty('voice', voice.id)
-#                                     break
-#                             engine.say(bot_response)
-#                             engine.runAndWait()
-
-#                             return bot_response
-
-#                     user_message = "Désolé, je n'ai pas de réponse pour cela."
-#                     save_conversation_to_database(user_message, 'bot', conversation_id, cursor, conn)
-#                     return user_message
-#                 else:
-#                     error_message = response_json.get('msg', 'Erreur inconnue')
-#                     save_conversation_to_database(
-#                         error_message, 'bot', conversation_id, cursor, conn)
-#                     return error_message
-
-#             else:
-#                 error_message = f"Erreur de communication avec l'api Coze: {response.text}"
-#                 save_conversation_to_database(error_message, 'bot', conversation_id, cursor, conn)
-#                 return error_message
-  
-# """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 def talk_to_daysie(user_input, user_id, file_url=None):
     # Connexion à la base de données
@@ -745,10 +338,11 @@ def talk_to_daysie(user_input, user_id, file_url=None):
             # Appel à l'API Coze
             data = {
                 "conversation_id": str(conversation_id),
-                "bot_id": "743598207946****",  # Remplacez par l'ID de votre bot
-                "user": "2903220******",  # Assurez-vous que l'ID utilisateur est correct
+                "bot_id": "7457826308001693701",  # Remplacez par l'ID de votre bot
+                "user": "29032201862555",  # Assurez-vous que l'ID utilisateur est correct
                 "query": user_input,
-                "stream": False
+                "stream": False,
+                "file_url": file_url  # Inclure l'URL du fichier dans les données de requête
             }
 
             # Affichage des données envoyées pour debug
@@ -763,7 +357,7 @@ def talk_to_daysie(user_input, user_id, file_url=None):
 
                 if response_json.get('code') == 0:
                     messages = response_json.get('messages', [])
-                    bot_response = None  # Initialisation de la réponse du bot
+                    #bot_response = None  # Initialisation de la réponse du bot
 
                     for message in messages:
                         if message['type'] == 'answer':
@@ -811,11 +405,10 @@ def talk_to_daysie(user_input, user_id, file_url=None):
 
 
 
-############# Fonction avec API de Ollama #############################
-
 # Fonction pour générer un titre de conversation
 def generate_conversation_title(user_input):
     return "Conversation - " + user_input[:30]
+
 
 # Fonction pour sauvegarder la conversation dans la base de données
 def save_conversation_to_database(content, sender, conversation_id, cursor, conn, file_url=None):
@@ -828,7 +421,6 @@ def save_conversation_to_database(content, sender, conversation_id, cursor, conn
     """
     cursor.execute(sql_insert_message, (conversation_id, content, file_url, sender))
     conn.commit()
-
 
 
 # Route pour récupérer les messages d'une conversation spécifique
@@ -844,8 +436,6 @@ def get_conversations():
             conversations = cursor.fetchall()
 
     return jsonify(conversations)
-
-
 
 
 @app.route('/get_messages/<int:conversation_id>', methods=['GET'])
@@ -867,14 +457,12 @@ def get_messages(conversation_id):
 
             # Récupérer les messages, y compris les URLs des fichiers
             cursor.execute(
-                'SELECT sender, content, file_url FROM messages WHERE conversation_id = %s ORDER BY created_at ASC',
+                'SELECT content, file_url, sender FROM messages WHERE conversation_id = %s ORDER BY created_at ASC',
                 (conversation_id,)
             )
             messages = cursor.fetchall()
 
     return jsonify(messages)
-
-
 
 
 @app.route('/conversation/<int:conversation_id>', methods=['GET'])
@@ -892,7 +480,7 @@ def conversation(conversation_id):
                 return "Unauthorized", 403
 
             cursor.execute(
-                "SELECT content, sender FROM messages WHERE conversation_id = %s", (conversation_id,))
+                "SELECT content, file_url, sender FROM messages WHERE conversation_id = %s", (conversation_id,))
             messages = cursor.fetchall()
             cursor.execute(
                 "SELECT nom, profileImage FROM users WHERE id = %s", (user_id,))
